@@ -397,7 +397,7 @@ export default {
     async searchChecks() {
       let phone = null;
       if(!this.qr){
-        if(!this.phone)
+        if(!this.searchPhone)
           return Swal.fire({
             title: "¡Aguas!",
             text: 'Debes seleccionar un teléfono o escanear el código QR.',
