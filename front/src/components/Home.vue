@@ -2,7 +2,12 @@
   <v-container class="mb-10">
     <v-toolbar color="light">
       <v-row justify="center" align="center">
-        <audio src="../../public/alert1.mp3" ref="audioAlert" preload="auto" muted='muted'></audio>
+        <audio
+          src="../../public/alert6.mp3"
+          ref="audioAlert"
+          preload="auto"
+          muted="muted"
+        ></audio>
         <v-img
           src="../../public/logo.jpg"
           class="ml-2"
@@ -55,12 +60,12 @@
         </v-card-title>
         <v-card-text>
           <v-row justify="center">
-            <v-img 
+            <v-img
               :src="img"
               class="ma-4 grey lighten-2"
               max-width="300"
               max-height="400"
-              :aspect-ratio="1/3"
+              :aspect-ratio="1 / 3"
             >
               <template v-slot:placeholder>
                 <v-row class="fill-height ma-0" align="center" justify="center">
@@ -92,12 +97,15 @@
             >
               Entrada
             </v-btn>
-            <v-btn plain
-            dark
-            color="red"
-            @click="checkOut"
-            :loading="loadCheckOut"
-            > Salida </v-btn>
+            <v-btn
+              plain
+              dark
+              color="red"
+              @click="checkOut"
+              :loading="loadCheckOut"
+            >
+              Salida
+            </v-btn>
           </v-row>
         </v-card-actions>
       </v-card>
@@ -166,17 +174,17 @@
           </v-card-title>
           <v-col cols="10">
             <v-textarea
-          clearable
-          no-resize
-          rows="1"
-          ref="focus"
-          auto-grow
-          clear-icon="mdi-close-circle"
-          label="Escanee QR"
-          prepend-icon="mdi-qrcode-scan"
-          v-model="qr"
-          @keypress.enter="searchChecks"
-        ></v-textarea>
+              clearable
+              no-resize
+              rows="1"
+              ref="focus"
+              auto-grow
+              clear-icon="mdi-close-circle"
+              label="Escanee QR"
+              prepend-icon="mdi-qrcode-scan"
+              v-model="qr"
+              @keypress.enter="searchChecks"
+            ></v-textarea>
             <v-text-field
               label="Número de teléfono"
               placeholder="10 dígitos"
@@ -220,9 +228,7 @@
               </v-date-picker>
             </v-menu>
           </v-col>
-          <v-btn color="primary" @click="searchChecks">
-            Buscar
-          </v-btn>
+          <v-btn color="primary" @click="searchChecks"> Buscar </v-btn>
           <v-simple-table class="ma-3" v-show="asistencias.length != 0">
             <template v-slot:default>
               <thead>
@@ -254,7 +260,17 @@
           <v-divider></v-divider>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="red" plain @click="[dialogAsistencias = false, day = '', searchPhone = '', asistencias = []]"
+            <v-btn
+              color="red"
+              plain
+              @click="
+                [
+                  (dialogAsistencias = false),
+                  (day = ''),
+                  (searchPhone = ''),
+                  (asistencias = []),
+                ]
+              "
               >Cerrar</v-btn
             >
           </v-card-actions>
@@ -296,7 +312,7 @@ export default {
     fecha: "",
     img: null,
     vcard: "",
-    qr: '',
+    qr: "",
     dialog: false,
     dialogAsistencias: false,
     filePhoto: [],
@@ -314,8 +330,8 @@ export default {
     values: [],
   }),
   methods: {
-    play(){
-      return this.$refs.audioAlert.play()
+    play() {
+      return this.$refs.audioAlert.play();
     },
     _setInterval() {
       setInterval(this.setTime, 100);
@@ -328,7 +344,7 @@ export default {
       let data = {
         name: this.values[0],
         phone: this.values[1],
-        checkIn: moment().format()
+        checkIn: moment().format(),
       };
       // this.values[3] = moment().format("HH:mm:ss");
       await axios
@@ -366,95 +382,103 @@ export default {
       let data = {
         name: this.values[0],
         phone: this.values[1],
-        checkOut: moment().format()
+        checkOut: moment().format(),
       };
       console.log(data.checkOut);
-      await axios.post(`${config.api}/asistencia`, {
-        data
-      })
-      .then(res => {
-        if(res.data.asist) {
+      await axios
+        .post(`${config.api}/asistencia`, {
+          data,
+        })
+        .then((res) => {
+          if (res.data.asist) {
+            Swal.fire({
+              title: "¡Hecho!",
+              text: `Hora de entrada a las ${this.values[3]} registrada con éxito.`,
+              icon: "success",
+              timer: 1200,
+              showConfirmButton: false,
+            }).then(() => {
+              this.values[4] = moment(res.data.asist.checkOut).format(
+                "HH:mm:ss"
+              );
+              this.loadCheckOut = false;
+            });
+          }
+        })
+        .catch((err) => {
           Swal.fire({
-            title: "¡Hecho!",
-            text: `Hora de entrada a las ${this.values[3]} registrada con éxito.`,
-            icon: "success",
-            timer: 1200,
-            showConfirmButton: false
-          })
-          .then(() => {
-            this.values[4] = moment(res.data.asist.checkOut).format('HH:mm:ss');
+            title: "¡Error!",
+            text: `Algo pasó durante la transacción.`,
+            icon: "error",
+          }).then(() => {
             this.loadCheckOut = false;
           });
-        }
-      })
-      .catch(err => {
-        Swal.fire({
-          title: "¡Error!",
-          text: `Algo pasó durante la transacción.`,
-          icon: "error",
-        })
-        .then(() => {
-          this.loadCheckOut = false;
         });
-      })
     },
     async searchChecks() {
       let phone = null;
-      if(!this.qr){
-        if(!this.searchPhone)
+      if (!this.qr) {
+        if (!this.searchPhone)
           return Swal.fire({
             title: "¡Aguas!",
-            text: 'Debes seleccionar un teléfono o escanear el código QR.',
-            icon: 'info',
-          })
-          else{
-            phone = this.searchPhone;
-          }
-      }
-      else {
+            text: "Debes seleccionar un teléfono o escanear el código QR.",
+            icon: "info",
+          });
+        else {
+          phone = this.searchPhone;
+        }
+      } else {
         if (this.endQR) {
-        this.qr = this.qr.split("\n");
-        let temp = this.qr.join(vCard.EOL);
-        temp = vCard.parse(temp);
-        phone = temp[0]["items"][5].value;
-        this.qr = "";
+          this.qr = this.qr.split("\n");
+          let temp = this.qr.join(vCard.EOL);
+          temp = vCard.parse(temp);
+          phone = temp[0]["items"][5].value;
+          this.qr = "";
         }
       }
-      if(!this.day)
+      if (!this.day)
         return Swal.fire({
           title: "¡Aguas!",
-          text: 'Debes seleccionar una fecha.',
-          icon: 'info',
-        })
-      let day = this.day;
-      await axios.get(`${config.api}/asistencia`, { 
-        params: {
-          phone,
-          day
-        }
-      }).then((res) => {
-        if (res.data.asistencia.length == 0)
-          return Swal.fire({
-            title: "¡Oops!",
-            text: "No se encontraron registros.",
-            icon: "info",
-            timer: 1200,
-            showConfirmButton: false,
-          });
-        this.asistencias = res.data.asistencia.map(el => {
-          return {
-            name: el.name,
-            phone: el.phone,
-            checkIn: el.checkIn ? moment(el.checkIn).format('HH:mm:ss') : '',
-            checkOut: el.checkOut ? moment(el.checkOut).format('HH:mm:ss') : '',
-          }
+          text: "Debes seleccionar una fecha.",
+          icon: "info",
         });
-      })
-      .catch(err => {
-        console.log(err);
-        console.log(err.response);
-        return Swal.fire('¡Error!', 'Ocurrió un error durante la búsqueda.', 'error');
-      });
+      let day = this.day;
+      await axios
+        .get(`${config.api}/asistencia`, {
+          params: {
+            phone,
+            day,
+          },
+        })
+        .then((res) => {
+          if (res.data.asistencia.length == 0)
+            return Swal.fire({
+              title: "¡Oops!",
+              text: "No se encontraron registros.",
+              icon: "info",
+              timer: 1200,
+              showConfirmButton: false,
+            });
+          this.asistencias = res.data.asistencia.map((el) => {
+            return {
+              name: el.name,
+              phone: el.phone,
+              checkIn: el.checkIn ? moment(el.checkIn).format("HH:mm:ss") : "",
+              checkOut: el.checkOut
+                ? moment(el.checkOut).format("HH:mm:ss")
+                : "",
+            };
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          console.log(err.response);
+          return Swal.fire(
+            "¡Error!",
+            "Ocurrió un error durante la búsqueda.",
+            "error"
+          );
+        });
     },
     cancelDialog() {
       this.dialog = false;
@@ -465,6 +489,8 @@ export default {
     },
     async searchByPhone() {
       let phone = this.phone;
+      if(!phone)
+        return Swal.fire('', 'Primero ingresa un número de teléfono.', 'info')
       await axios
         .get(`${config.api}/empleado`, {
           // phone:
@@ -473,27 +499,30 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.message){
-            this.play()
+          if (res.data.message) {
+            this.play();
             Swal.fire("¡Atención!", `${res.data.message}`, "warning");
+          } else if (res.data.empleado) {
+            // if (res.data.empleado) {
+            //   Swal.fire({
+            //     icon: "success",
+            //     title: "¡Hecho!",
+            //     text: `Empleado ${res.data.empleado[0].name}`,
+            //     timer: 1000,
+            //     showConfirmButton: false,
+            //     position: "top-end",
+            //   });
+            // }
+            this.values[0] = res.data.empleado[0].name || "";
+            this.values[1] = res.data.empleado[0].phone || "";
+            this.values[2] = res.data.empleado[0].email || "";
+            this.img = res.data.empleado[0].photo
+              ? encodeURI(
+                  `${config.api}/img?photo=${res.data.empleado[0].photo}`
+                )
+              : "";
+            this.status = res.data.empleado[0].status || "";
           }
-          // if (res.data.empleado) {
-          //   Swal.fire({
-          //     icon: "success",
-          //     title: "¡Hecho!",
-          //     text: `Empleado ${res.data.empleado[0].name}`,
-          //     timer: 1000,
-          //     showConfirmButton: false,
-          //     position: "top-end",
-          //   });
-          // }
-          this.values[0] = res.data.empleado[0].name || "";
-          this.values[1] = res.data.empleado[0].phone || "";
-          this.values[2] = res.data.empleado[0].email || "";
-          this.img = res.data.empleado[0].photo
-            ? encodeURI(`${config.api}/img?photo=${res.data.empleado[0].photo}`)
-            : "";
-          this.status = res.data.empleado[0].status || "";
         })
         .catch((err) => {
           console.log(err);
@@ -516,8 +545,8 @@ export default {
             },
           })
           .then((res) => {
-            if (res.data.message){
-                this.play();
+            if (res.data.message) {
+              this.play();
               return Swal.fire("Atención", `${res.data.message}`, "warning");
             }
             if (res.data.empleado) {
@@ -529,13 +558,15 @@ export default {
                 showConfirmButton: false,
                 position: "top-end",
               }).then((res) => (this.vcard = null));
-              this.values[0] = res.data.empleado[0].name;
-              this.values[1] = res.data.empleado[0].phone;
-              this.values[2] = res.data.empleado[0].email;
-              this.img = encodeURI(
-                `${config.api}/img?photo=${res.data.empleado[0].photo}`
-              );
-              this.status = res.data.empleado[0].status;
+              this.values[0] = res.data.empleado[0].name || "";
+              this.values[1] = res.data.empleado[0].phone || "";
+              this.values[2] = res.data.empleado[0].email || "";
+              this.img = res.data.empleado[0].photo
+                ? encodeURI(
+                    `${config.api}/img?photo=${res.data.empleado[0].photo}`
+                  )
+                : "";
+              this.status = res.data.empleado[0].status || "";
               // this.values[3] = moment().format("HH:mm:ss");
             }
           })
