@@ -2,6 +2,7 @@
   <v-container class="mb-10">
     <v-toolbar color="light">
       <v-row justify="center" align="center">
+        <audio src="../../public/alert1.mp3" ref="audioAlert" preload="auto" muted='muted'></audio>
         <v-img
           src="../../public/logo.jpg"
           class="ml-2"
@@ -313,6 +314,9 @@ export default {
     values: [],
   }),
   methods: {
+    play(){
+      return this.$refs.audioAlert.play()
+    },
     _setInterval() {
       setInterval(this.setTime, 100);
     },
@@ -469,18 +473,20 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.message)
-            return Swal.fire("Atención", `${res.data.message}`, "warning");
-          if (res.data.empleado) {
-            Swal.fire({
-              icon: "success",
-              title: "¡Hecho!",
-              text: `Empleado ${res.data.empleado[0].name}`,
-              timer: 1000,
-              showConfirmButton: false,
-              position: "top-end",
-            });
+          if (res.data.message){
+            this.play()
+            Swal.fire("¡Atención!", `${res.data.message}`, "warning");
           }
+          // if (res.data.empleado) {
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "¡Hecho!",
+          //     text: `Empleado ${res.data.empleado[0].name}`,
+          //     timer: 1000,
+          //     showConfirmButton: false,
+          //     position: "top-end",
+          //   });
+          // }
           this.values[0] = res.data.empleado[0].name || "";
           this.values[1] = res.data.empleado[0].phone || "";
           this.values[2] = res.data.empleado[0].email || "";
@@ -510,8 +516,10 @@ export default {
             },
           })
           .then((res) => {
-            if (res.data.message)
+            if (res.data.message){
+                this.play();
               return Swal.fire("Atención", `${res.data.message}`, "warning");
+            }
             if (res.data.empleado) {
               Swal.fire({
                 icon: "success",
@@ -527,6 +535,7 @@ export default {
               this.img = encodeURI(
                 `${config.api}/img?photo=${res.data.empleado[0].photo}`
               );
+              this.status = res.data.empleado[0].status;
               // this.values[3] = moment().format("HH:mm:ss");
             }
           })
