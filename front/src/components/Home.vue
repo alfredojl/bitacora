@@ -501,11 +501,10 @@ export default {
         .then((res) => {
           if (res.data.message) {
             this.play();
-            Swal.fire("¡Atención!", `${res.data.message}`, "warning");
-          } else if (res.data.empleado) {
+          if (res.data.empleado) {
             // if (res.data.empleado) {
-            //   Swal.fire({
-            //     icon: "success",
+              //   Swal.fire({
+                //     icon: "success",
             //     title: "¡Hecho!",
             //     text: `Empleado ${res.data.empleado[0].name}`,
             //     timer: 1000,
@@ -518,11 +517,13 @@ export default {
             this.values[2] = res.data.empleado[0].email || "";
             this.img = res.data.empleado[0].photo
               ? encodeURI(
-                  `${config.api}/img?photo=${res.data.empleado[0].photo}`
+                `${config.api}/img?photo=${res.data.empleado[0].photo}`
                 )
               : "";
             this.status = res.data.empleado[0].status || "";
           }
+            Swal.fire("¡Atención!", `${res.data.message}`, "warning");
+        }
         })
         .catch((err) => {
           console.log(err);
