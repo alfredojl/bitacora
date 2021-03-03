@@ -499,9 +499,13 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.message) {
-            this.play();
-          if (res.data.empleado) {
+          if (!res.data.ok) {
+            if(res.data.message.length < 30)
+              this.play();
+            Swal.fire("¡Atención!", `${res.data.message}`, "warning");
+            }
+          if(res.data.empleado){
+          // if (res.data.empleado) {
             // if (res.data.empleado) {
               //   Swal.fire({
                 //     icon: "success",
@@ -521,9 +525,8 @@ export default {
                 )
               : "";
             this.status = res.data.empleado[0].status || "";
+          // }
           }
-            Swal.fire("¡Atención!", `${res.data.message}`, "warning");
-        }
         })
         .catch((err) => {
           console.log(err);
@@ -533,10 +536,12 @@ export default {
     async searchEmployee() {
       // this.$refs.focus.focus();
       if (this.endVcard) {
-        this.vcard = this.vcard.split("\n");
-        let temp = this.vcard.join(vCard.EOL);
-        temp = vCard.parse(temp);
-        let phone = temp[0]["items"][5].value;
+        // console.log();
+        let phone = this.vcard.slice(this.vcard.indexOf('pref:') + 5, this.vcard.indexOf('ADR:', 0));
+        // this.vcard = this.vcard.split("\n");
+        // let temp = this.vcard.join(vCard.EOL);
+        // temp = vCard.parse(temp);
+        // let phone = temp[0]["items"][5].value;
         this.vcard = "";
         await axios
           .get(`${config.api}/empleado`, {

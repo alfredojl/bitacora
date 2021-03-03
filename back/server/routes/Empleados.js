@@ -16,12 +16,12 @@ app.get(url, (req, res) => {
             });
         if (empleadoDB.length < 1)
             return res.json({
-                ok: true,
+                ok: false,
                 message: `No se encontró el empleado con el número de teléfono ${phone}.`
             });
         if (!empleadoDB[0].status)
             return res.json({
-                ok: true,
+                ok: false,
                 message: 'El empleado no está vigente.',
                 empleado: empleadoDB
             })
