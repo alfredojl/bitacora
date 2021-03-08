@@ -11,10 +11,7 @@ let asistenciaSchema = new Schema({
         type: String,
         required: true
     },
-    checkIn: {
-        type: Date
-    },
-    checkOut: {
+    check: {
         type: Date
     }
 })

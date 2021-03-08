@@ -9,10 +9,7 @@ moment.locale('es-mx');
 
 app.post(url, async(req, res) => {
     let body = req.body.data;
-    if (body.checkIn)
-        body.checkIn = moment(body.checkIn)
-    if (body.checkOut)
-        body.checkOut = moment(body.checkOut)
+    body.check = moment(body.check);
 
     // res.json({
     //     ok: true
@@ -32,14 +29,11 @@ app.post(url, async(req, res) => {
 
 app.get(url, async(req, res) => {
     let phone = req.query.phone;
-    let day = req.query.day;
+    let day = moment().format('YYYY-MM-DD');
 
     await Asistencia.find({
         phone,
-        $or: [
-            { checkIn: { $lte: moment(day + ' 23:59:59'), $gte: moment(day) } },
-            { checkOut: { $lte: moment(day + ' 23:59:59'), $gte: moment(day) } }
-        ]
+        check: { $lte: moment(day + ' 23:59:59'), $gte: moment(day) }
     }, (err, asistDB) => {
         if (err)
             return res.status(501).json({

@@ -11,12 +11,14 @@
         "axios": "^0.21.1",
         "core-js": "^3.6.5",
         "moment": "^2.29.1",
+        "qrcode": "^1.4.4",
         "sweetalert2": "^10.15.5",
         "vcard-js": "^1.2.2",
         "vcf": "^2.1.0",
         "vue": "^2.6.11",
         "vue-router": "^3.5.1",
-        "vuetify": "^2.4.0"
+        "vuetify": "^2.4.0",
+        "xlsx": "^0.16.9"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "~4.5.0",

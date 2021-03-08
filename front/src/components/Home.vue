@@ -86,7 +86,7 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions v-show="values[2]">
+        <!-- <v-card-actions v-show="values[2]">
           <v-row justify="center" aling="center">
             <v-btn
               plain
@@ -101,13 +101,12 @@
               plain
               dark
               color="red"
-              @click="checkOut"
-              :loading="loadCheckOut"
+              @click="check"
             >
               Salida
             </v-btn>
           </v-row>
-        </v-card-actions>
+        </v-card-actions> -->
       </v-card>
     </v-row>
     <v-spacer></v-spacer>
@@ -194,7 +193,7 @@
               clear-icon="mdi-close-circle"
             ></v-text-field>
           </v-col>
-          <v-col cols="10">
+          <!-- <v-col cols="10">
             <v-menu
               ref="menu"
               v-model="menu"
@@ -227,7 +226,7 @@
                 </v-btn>
               </v-date-picker>
             </v-menu>
-          </v-col>
+          </v-col> -->
           <v-btn color="primary" @click="searchChecks"> Buscar </v-btn>
           <v-simple-table class="ma-3" v-show="asistencias.length != 0">
             <template v-slot:default>
@@ -235,8 +234,7 @@
                 <tr>
                   <th>Nombre</th>
                   <th>Teléfono</th>
-                  <th>Entrada</th>
-                  <th>Salida</th>
+                  <th>Hora</th>
                 </tr>
               </thead>
               <tbody>
@@ -247,11 +245,11 @@
                   <td>
                     {{ item.phone }}
                   </td>
+                  <!-- <td>
+                    {{ item.check }}
+                  </td> -->
                   <td>
-                    {{ item.checkIn }}
-                  </td>
-                  <td>
-                    {{ item.checkOut }}
+                    {{ item.check }}
                   </td>
                 </tr>
               </tbody>
@@ -317,7 +315,6 @@ export default {
     dialogAsistencias: false,
     filePhoto: [],
     loadCheckIn: false,
-    loadCheckOut: false,
     day: "",
     name: "",
     asistencias: [],
@@ -326,7 +323,7 @@ export default {
     phone: "",
     searchPhone: "",
     status: true,
-    campos: ["Nombre", "Teléfono", "E-mail", "Entrada", "Salida"],
+    campos: ["Nombre", "Teléfono", "E-mail", "Hora"],
     values: [],
   }),
   methods: {
@@ -339,14 +336,12 @@ export default {
     setTime() {
       this.fecha = moment().format("LLLL:ss");
     },
-    async checkIn() {
-      this.loadCheckIn = true;
+    async check() {
       let data = {
         name: this.values[0],
         phone: this.values[1],
-        checkIn: moment().format(),
+        check: moment().format(),
       };
-      // this.values[3] = moment().format("HH:mm:ss");
       await axios
         .post(`${config.api}/asistencia`, {
           data,
@@ -355,15 +350,16 @@ export default {
           if (res.data.asist) {
             Swal.fire({
               title: "¡Hecho!",
-              text: `Hora de entrada a las ${this.values[3]} registrada con éxito.`,
+              text: `Hora de registro a las ${moment(res.data.asist.check).format(
+                "HH:mm:ss"
+              )}.`,
               icon: "success",
               timer: 1200,
               showConfirmButton: false,
             }).then(() => {
-              this.values[3] = moment(res.data.asist.checkIn).format(
+              this.values[3] = moment(res.data.asist.check).format(
                 "HH:mm:ss"
               );
-              this.loadCheckIn = false;
             });
           }
         })
@@ -373,45 +369,6 @@ export default {
             text: `Algo pasó durante la transacción.`,
             icon: "error",
           }).then(() => {
-            this.loadCheckIn = false;
-          });
-        });
-    },
-    async checkOut() {
-      this.loadCheckOut = true;
-      let data = {
-        name: this.values[0],
-        phone: this.values[1],
-        checkOut: moment().format(),
-      };
-      console.log(data.checkOut);
-      await axios
-        .post(`${config.api}/asistencia`, {
-          data,
-        })
-        .then((res) => {
-          if (res.data.asist) {
-            Swal.fire({
-              title: "¡Hecho!",
-              text: `Hora de entrada a las ${this.values[3]} registrada con éxito.`,
-              icon: "success",
-              timer: 1200,
-              showConfirmButton: false,
-            }).then(() => {
-              this.values[4] = moment(res.data.asist.checkOut).format(
-                "HH:mm:ss"
-              );
-              this.loadCheckOut = false;
-            });
-          }
-        })
-        .catch((err) => {
-          Swal.fire({
-            title: "¡Error!",
-            text: `Algo pasó durante la transacción.`,
-            icon: "error",
-          }).then(() => {
-            this.loadCheckOut = false;
           });
         });
     },
@@ -436,18 +393,18 @@ export default {
           this.qr = "";
         }
       }
-      if (!this.day)
-        return Swal.fire({
-          title: "¡Aguas!",
-          text: "Debes seleccionar una fecha.",
-          icon: "info",
-        });
-      let day = this.day;
+      // if (!this.day)
+      //   return Swal.fire({
+      //     title: "¡Aguas!",
+      //     text: "Debes seleccionar una fecha.",
+      //     icon: "info",
+      //   });
+      // let day = this.day;
       await axios
         .get(`${config.api}/asistencia`, {
           params: {
             phone,
-            day,
+            // day,
           },
         })
         .then((res) => {
@@ -463,9 +420,8 @@ export default {
             return {
               name: el.name,
               phone: el.phone,
-              checkIn: el.checkIn ? moment(el.checkIn).format("HH:mm:ss") : "",
-              checkOut: el.checkOut
-                ? moment(el.checkOut).format("HH:mm:ss")
+              check: el.check
+                ? moment(el.check).format("HH:mm:ss")
                 : "",
             };
           });
@@ -507,14 +463,14 @@ export default {
           if(res.data.empleado){
           // if (res.data.empleado) {
             // if (res.data.empleado) {
-              //   Swal.fire({
-                //     icon: "success",
-            //     title: "¡Hecho!",
-            //     text: `Empleado ${res.data.empleado[0].name}`,
-            //     timer: 1000,
-            //     showConfirmButton: false,
-            //     position: "top-end",
-            //   });
+                Swal.fire({
+                    icon: "success",
+                title: "¡Hecho!",
+                text: `Empleado ${res.data.empleado[0].name}`,
+                timer: 1000,
+                showConfirmButton: false,
+                position: "top-end",
+              });
             // }
             this.values[0] = res.data.empleado[0].name || "";
             this.values[1] = res.data.empleado[0].phone || "";
@@ -527,6 +483,7 @@ export default {
             this.status = res.data.empleado[0].status || "";
           // }
           }
+          this.check();
         })
         .catch((err) => {
           console.log(err);

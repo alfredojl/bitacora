@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
 
 const Empleado = require('../models/Empleados');
 const url = '/empleado';
@@ -35,7 +37,14 @@ app.get(url, (req, res) => {
 app.get('/img', (req, res) => {
     let photo = req.query.photo;
     res.writeHead(200, { 'content-type': 'image/jpg' });
-    fs.createReadStream(photo).pipe(res)
+    try {
+        if (fs.statSync(photo))
+            fs.createReadStream(photo).pipe(res)
+
+    } catch (error) {
+        photo = path.resolve('server/logo.jpg')
+        fs.createReadStream(photo).pipe(res)
+    }
 })
 
 app.post(url, async(req, res) => {
