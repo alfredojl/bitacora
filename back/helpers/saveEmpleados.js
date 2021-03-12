@@ -1,4 +1,4 @@
-const xlsx = require('xlsx');
+// const xlsx = require('xlsx');
 const Empleado = require('../server/models/Empleados');
 const path = require('path');
 const os = require('os');
@@ -20,10 +20,11 @@ const saveEmpleados = async() => {
             if (err) throw new Error(err);
             let count = 0;
             empleadosDB.forEach(el => {
-                let photo = el.photo.split('.');
-                photo[1] = 'jpg';
-                photo = photo.join('.');
-                el.photo = photo;
+                el.photo = path.resolve(os.homedir() + '/employeesPhotos/' + el.name.split(' ')[0] + '-' + el.phone + '.jpg');
+                // photo[1] = 'jpg';
+                // photo = photo.join('.');
+                // el.photo = photo;
+                console.log(el.photo)
                 Empleado.updateMany({ phone: el.phone }, el, (err, empleadoDB) => {
                     if (err) throw new Error(err);
                     count++;

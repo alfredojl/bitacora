@@ -42,7 +42,7 @@ app.get('/img', (req, res) => {
             fs.createReadStream(photo).pipe(res)
 
     } catch (error) {
-        photo = path.resolve('server/logo.jpg')
+        photo = path.resolve('server/logo.png')
         fs.createReadStream(photo).pipe(res)
     }
 })
