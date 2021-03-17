@@ -5,7 +5,7 @@ const buildVcard = () => {
     let workbook = xlsx.readFile('./empleadosDSH.xlsx');
     let heads = workbook.SheetNames;
     xlsx.utils.sheet_to_json(workbook.Sheets[heads[0]]).forEach((el, index) => {
-        qr.toFile(`./${el.nombre.split(' ')[0]+ '-' + el.telefono}.png`, `BEGIN:VCARD
+        qr.toFile(`./${el.ID}.png`, `BEGIN:VCARD
 VERSION:3.0
 N:${el.telefono};${el.nombre}
 FN:${el.nombreEmbozado}
@@ -21,7 +21,7 @@ END:VCARD`, {
             (err) => {
                 if (err)
                     return new Error(err);
-                console.log('done ' + (index + 1) + ' ' + el.nombre);
+                console.log('done ' + ' ' + el.ID + ' ' + (index + 1) + ' ' + el.nombre);
             })
     })
 };

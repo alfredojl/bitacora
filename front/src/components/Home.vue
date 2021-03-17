@@ -43,7 +43,7 @@
           clear-icon="mdi-close-circle"
           v-model="phone"
           label="Número de teléfono"
-          placeholder="55 5555 5555"
+          placeholder="10 dígitos"
           prepend-icon="mdi-phone"
           @keypress.enter="searchByPhone"
         >
@@ -436,6 +436,10 @@ export default {
           );
         });
     },
+    limpiar() {
+      this.img = '';
+      this.values = [];
+    },
     cancelDialog() {
       this.dialog = false;
       this.name = "";
@@ -444,6 +448,7 @@ export default {
       this.filePhoto = [];
     },
     async searchByPhone() {
+      this.limpiar();
       let phone = this.phone;
       if(!phone)
         return Swal.fire('', 'Primero ingresa un número de teléfono.', 'info')
@@ -463,14 +468,14 @@ export default {
           if(res.data.empleado){
           // if (res.data.empleado) {
             // if (res.data.empleado) {
-                Swal.fire({
-                    icon: "success",
-                title: "¡Hecho!",
-                text: `Empleado ${res.data.empleado[0].name}`,
-                timer: 1000,
-                showConfirmButton: false,
-                position: "top-end",
-              });
+              //   Swal.fire({
+              //       icon: "success",
+              //   title: "¡Hecho!",
+              //   text: `Empleado ${res.data.empleado[0].name}`,
+              //   timer: 1000,
+              //   showConfirmButton: false,
+              //   position: "top-end",
+              // });
             // }
             this.values[0] = res.data.empleado[0].name || "";
             this.values[1] = res.data.empleado[0].phone || "";
@@ -482,15 +487,16 @@ export default {
               : "";
             this.status = res.data.empleado[0].status || "";
           // }
+            this.check();
           }
-          this.check();
         })
         .catch((err) => {
           console.log(err);
-          Swal.fire("¡Error!", "Algo ocurrió en la petición.", "error");
+          Swal.fire("¡Error!", "Algo ocurrió durante la petición.", "error");
         });
     },
     async searchEmployee() {
+      this.limpiar();
       // this.$refs.focus.focus();
       if (this.endVcard) {
         // console.log();
