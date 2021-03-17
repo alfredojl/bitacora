@@ -536,6 +536,7 @@ export default {
                   )
                 : "";
               this.status = res.data.empleado[0].status || "";
+              this.check();
               // this.values[3] = moment().format("HH:mm:ss");
             }
           })
