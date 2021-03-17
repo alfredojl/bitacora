@@ -3,7 +3,7 @@
     <v-toolbar color="light">
       <v-row justify="center" align="center">
         <audio
-          src="../../public/alert6.mp3"
+          src="../../public/alert1.mp3"
           ref="audioAlert"
           preload="auto"
           muted="muted"
@@ -499,8 +499,8 @@ export default {
       this.limpiar();
       // this.$refs.focus.focus();
       if (this.endVcard) {
-        // console.log();
-        let phone = this.vcard.slice(this.vcard.indexOf('pref:') + 5, this.vcard.indexOf('ADR:', 0));
+        console.log(this.vcard);
+        let phone = this.vcard.slice(this.vcard.indexOf('pref:') + 5, this.vcard.indexOf('END:', 0));
         // this.vcard = this.vcard.split("\n");
         // let temp = this.vcard.join(vCard.EOL);
         // temp = vCard.parse(temp);
